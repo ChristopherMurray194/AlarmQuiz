@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.AnalogClock;
@@ -16,6 +17,8 @@ import android.widget.DigitalClock;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextClock;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -40,37 +43,14 @@ private static AnalogClock Analog;
             }
         });
 
-        Button ToggleClock = (Button) findViewById(R.id.toggleClock);
         Digital = (TextClock)findViewById(R.id.digitalClock);
         Analog = (AnalogClock)findViewById(R.id.analogClock);
-        ToggleClock.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                // If the digtial clock is not visible
-                if(Digital.getVisibility() == TextClock.GONE)
-                {
-                    // Make it visible
-                    Digital.setVisibility(TextClock.VISIBLE);
-                    // Hide the analog clock
-                    Analog.setVisibility(AnalogClock.GONE);
-                }// If the analog clock is not visible
-                else
-                {
-                    // Hide the text clock
-                    Digital.setVisibility(TextClock.GONE);
-                    // Mkae the analog clock visible
-                    Analog.setVisibility(AnalogClock.VISIBLE);
-                }
-            }
-        });
 
-        addAlarms();
-
+        SetupListView();
+        OnAlarmClick();
     }
 
-    private void addAlarms()
+    private void SetupListView()
     {
         // Create a dynamic array list of
         ArrayList<String> alarmsArr = new ArrayList<String>();
@@ -85,6 +65,27 @@ private static AnalogClock Analog;
 
         ListView list = (ListView) findViewById(R.id.alarmList);
         list.setAdapter(adapter);
+    }
+
+    private void OnAlarmClick()
+    {
+        ListView list = (ListView) findViewById(R.id.alarmList);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                ConfigureAlarm(view);
+            }
+        });
+    }
+
+    /** Called when the user clicks an item in the ListView */
+    public void ConfigureAlarm(View view)
+    {
+        Intent intent = new Intent(this, ConfigAlarmActivity.class);
+
+        startActivity(intent);
     }
 
     @Override

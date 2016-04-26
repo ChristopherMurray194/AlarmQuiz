@@ -21,21 +21,11 @@
         android:layout_below="@id/analogClock"
         />
 
-    <Button
-        android:id="@+id/toggleClock"
-        android:layout_width="96dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/digitalClock"
-        android:layout_alignParentLeft="true"
-        android:text="@string/swap_clock"
-        />
-
     <ListView
         android:id="@+id/alarmList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toggleClock"
-        >
+        android:layout_below="@+id/digitalClock">
 
     </ListView>
 
