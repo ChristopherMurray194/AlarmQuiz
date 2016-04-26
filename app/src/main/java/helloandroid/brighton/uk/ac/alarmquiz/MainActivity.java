@@ -9,11 +9,15 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.AnalogClock;
 import android.widget.DigitalClock;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextClock;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 public final static String EXTRA_MESSAGE = "helloandroid.brighton.uk.ac.alarmquiz.MESSAGE";
@@ -62,6 +66,25 @@ private static AnalogClock Analog;
             }
         });
 
+        addAlarms();
+
+    }
+
+    private void addAlarms()
+    {
+        // Create a dynamic array list of
+        ArrayList<String> alarmsArr = new ArrayList<String>();
+        // Add it to the list of alarms
+        alarmsArr.add("14:30");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this,           // Context for the activity
+                R.layout.alarm, // Layout to use
+                alarmsArr       // Views to be displayed
+        );
+
+        ListView list = (ListView) findViewById(R.id.alarmList);
+        list.setAdapter(adapter);
     }
 
     @Override
@@ -84,19 +107,5 @@ private static AnalogClock Analog;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /** Called when the user clicks the send button */
-    public void sendMessage(View view)
-    {
-        // Create a new intent to start an activity
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        // Get the EditText element
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        // Store the message
-        String message = editText.getText().toString();
-        // Add the message to the intent
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
     }
 }
