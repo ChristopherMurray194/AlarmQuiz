@@ -1,10 +1,16 @@
 package helloandroid.brighton.uk.ac.alarmquiz;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 public final static String EXTRA_MESSAGE = "helloandroid.brighton.uk.ac.alarmquiz.MESSAGE";
 private static TextClock Digital;
 private static AnalogClock Analog;
+// Create a dynamic array list of
+public ArrayList<String> alarmsArr = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +60,9 @@ private static AnalogClock Analog;
 
     private void SetupListView()
     {
-        // Create a dynamic array list of
-        ArrayList<String> alarmsArr = new ArrayList<String>();
         // Add it to the list of alarms
-        alarmsArr.add("14:30");
+        AddNewAlarm("14:30");
+        AddNewAlarm("06:05");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this,           // Context for the activity
@@ -67,14 +74,18 @@ private static AnalogClock Analog;
         list.setAdapter(adapter);
     }
 
+    /**
+     * Add a new string to the alarm list
+     * @param str
+     */
+    public void AddNewAlarm(String str) { alarmsArr.add(str); }
+
     private void OnAlarmClick()
     {
         ListView list = (ListView) findViewById(R.id.alarmList);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ConfigureAlarm(view);
             }
         });
