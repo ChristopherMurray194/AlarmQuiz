@@ -25,8 +25,6 @@ TimePicker tp;
 public PendingIntent pendingIntent;
 // Used to store running alarm manager
 AlarmManager alarmManager;
-// Callback function for alarm manager event
-BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +44,7 @@ BroadcastReceiver mReceiver;
 
         RegisterAlarmBroadcast();
 
-        // Set up OK button functionality
+        // Set OK button functionality
         Button OKBttn = (Button) findViewById(R.id.confirm_button);
         OKBttn.setOnClickListener(new View.OnClickListener()
         {
@@ -56,6 +54,18 @@ BroadcastReceiver mReceiver;
                 onClickSetAlarm(view);
             }
         });
+
+        // Set Cancel button functionality
+        Button CancelBttn = (Button) findViewById(R.id.exit_button);
+        CancelBttn.setOnClickListener(new View.OnClickListener()
+        {
+          @Override
+          public void onClick(View v)
+          {
+            finish(); // Finish activity
+          }
+        });
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         tp = (TimePicker)findViewById(R.id.timePicker); // Get the time picker resource
@@ -70,19 +80,8 @@ BroadcastReceiver mReceiver;
 
     private void RegisterAlarmBroadcast()
     {
-        // This is the call back function(BroacastReceiver) which will be called when the alarm time is reached
-        mReceiver = new BroadcastReceiver()
-        {
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                Toast.makeText(context, "Alarm Time Reached", Toast.LENGTH_LONG).show();
-            }
-        };
-
-        // Register the alarm broadcast here
-        registerReceiver(mReceiver, new IntentFilter("helloandroid.brighton.uk.ac.alarmquiz"));
-        pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent("helloandroid.brighton.uk.ac.alarmquiz"), 0);
+        Intent intent = new Intent(this, PersistentAlarm.class);
+        pendingIntent = PendingIntent.getService(this, 0, intent, 0);
         alarmManager = (AlarmManager)(this.getSystemService(Context.ALARM_SERVICE));
     }
 
@@ -100,19 +99,17 @@ BroadcastReceiver mReceiver;
         // so here we get
        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         // Alarm is set, exit activity
-        //finish();
+        finish();
     }
 
     private void UnregisterAlarmBroadcast()
     {
         alarmManager.cancel(pendingIntent);
-        getBaseContext().unregisterReceiver(mReceiver);
     }
 
     @Override
     protected void onDestroy()
     {
-        unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 

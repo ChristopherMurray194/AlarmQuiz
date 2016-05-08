@@ -27,6 +27,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="helloandroid.brighton.uk.ac.alarmquiz.MainActivity" />
         </activity>
+
+        <service
+            android:name=".PersistentAlarm"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
