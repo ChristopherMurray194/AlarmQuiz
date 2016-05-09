@@ -34,6 +34,8 @@ private static TextClock Digital;
 private static AnalogClock Analog;
 // Create a dynamic array list of
 public ArrayList<String> alarmsArr = new ArrayList<String>();
+// The ListView that lists the alarms
+ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,50 +44,66 @@ public ArrayList<String> alarmsArr = new ArrayList<String>();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         Digital = (TextClock)findViewById(R.id.digitalClock);
         Analog = (AnalogClock)findViewById(R.id.analogClock);
 
         SetupListView();
         OnAlarmClick();
+
+        AddAlarmBttnAction();
     }
 
     private void SetupListView()
     {
-        // Add it to the list of alarms
-        AddNewAlarm("14:30");
-        AddNewAlarm("06:05");
+        list = (ListView) findViewById(R.id.alarmList);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this,           // Context for the activity
                 R.layout.alarm, // Layout to use
                 alarmsArr       // Views to be displayed
         );
-
-        ListView list = (ListView) findViewById(R.id.alarmList);
         list.setAdapter(adapter);
+
+        // Add it to the list of alarms
+        AddNewAlarm("14:30");
+        AddNewAlarm("06:05");
+    }
+
+    /**
+     * Handle the AddAlarm button declaration and OnClickEvent
+     */
+    private void AddAlarmBttnAction()
+    {
+        FloatingActionButton addAlarmBttn = (FloatingActionButton) findViewById(R.id.addAlarm);
+        addAlarmBttn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                AddNewAlarm("11:30");
+            }
+        });
     }
 
     /**
      * Add a new string to the alarm list
      * @param str
      */
-    public void AddNewAlarm(String str) { alarmsArr.add(str); }
+    public void AddNewAlarm(String str)
+    {
+        // Store the ListView adapter locally
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
+        // Add to list view
+        adapter.add(str);
+    }
 
     private void OnAlarmClick()
     {
         ListView list = (ListView) findViewById(R.id.alarmList);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
                 ConfigureAlarm(view);
             }
         });

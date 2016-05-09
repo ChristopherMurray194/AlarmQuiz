@@ -33,15 +33,6 @@ AlarmManager alarmManager;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         RegisterAlarmBroadcast();
 
         // Set OK button functionality
@@ -105,6 +96,12 @@ AlarmManager alarmManager;
     private void UnregisterAlarmBroadcast()
     {
         alarmManager.cancel(pendingIntent);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
     }
 
     @Override
