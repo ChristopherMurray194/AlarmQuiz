@@ -1,5 +1,6 @@
 package helloandroid.brighton.uk.ac.alarmquiz;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -21,6 +22,9 @@ import java.util.Date;
 
 public class ConfigAlarmActivity extends AppCompatActivity {
 TimePicker tp;
+// The hour and minute key constants used for saving the time picker's hour and time
+static final String ALARM_HOUR = "Hour";
+static final String ALARM_MINUTE = "Minute";
 // Used to register alarm manager
 public PendingIntent pendingIntent;
 // Used to store running alarm manager
@@ -29,6 +33,7 @@ AlarmManager alarmManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_config_alarm);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -50,23 +55,40 @@ AlarmManager alarmManager;
         Button CancelBttn = (Button) findViewById(R.id.exit_button);
         CancelBttn.setOnClickListener(new View.OnClickListener()
         {
-          @Override
-          public void onClick(View v)
-          {
-            finish(); // Finish activity
-          }
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent();
+                Bundle extras = getIntent().getExtras();
+                if(extras != null)
+                {
+                    // Pass the AlarmTime string back to the previous activity
+                    intent.putExtra("ALARM_TIME", extras.getString("CURRENT_TIME"));
+                }
+                setResult(Activity.RESULT_OK, intent);
+                finish(); // Finish activity
+            }
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        tp = (TimePicker)findViewById(R.id.timePicker); // Get the time picker resource
+        tp = (TimePicker) findViewById(R.id.timePicker); // Get the time picker resource
     }
 
-    private void GetAlarmTime()
+    /**
+     * Get the chosen time from the user, convert it to a string and return
+     * @return - Chosen time by the user converted to a string
+     */
+    private String GetAlarmTime()
     {
-        // Get the hour and time from the time picker and assign to a string
-        String timeHourStr = String.format((getString(R.string.AlarmHour)), String.valueOf(tp.getHour()));
-        String timeMinuteStr = String.format((getString(R.string.AlarmMinute)), String.valueOf(tp.getMinute()));
+        String Hour = String.valueOf(tp.getHour()), Minute = String.valueOf(tp.getMinute());
+        // If hour or minute is less than a single digit, prepend with a 0
+        if(tp.getHour() < 10) { Hour = "0" + Hour; }
+        if (tp.getMinute() < 10) { Minute = "0" + Minute; }
+
+        // Get the hour and minute from the time picker and assign to a string
+        String AlarmTime = String.format(("%s:%s"), Hour, Minute);
+        return AlarmTime;
     }
 
     private void RegisterAlarmBroadcast()
@@ -76,6 +98,10 @@ AlarmManager alarmManager;
         alarmManager = (AlarmManager)(this.getSystemService(Context.ALARM_SERVICE));
     }
 
+    /**
+     * When the OK button is clicked, set the alarm and exit the activity
+     * @param view
+     */
     public void onClickSetAlarm(View view)
     {
         Date date = new Date(); // Initializes to current time/date
@@ -89,6 +115,10 @@ AlarmManager alarmManager;
         // Get the current time and set alarm after 10 seconds from current time
         // so here we get
        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        Intent intent = new Intent();
+        // Pass the AlarmTime string back to the previous activity
+        intent.putExtra("ALARM_TIME", GetAlarmTime());
+        setResult(Activity.RESULT_OK, intent);
         // Alarm is set, exit activity
         finish();
     }
@@ -99,9 +129,23 @@ AlarmManager alarmManager;
     }
 
     @Override
-    protected void onPause()
+    public void onSaveInstanceState(Bundle savedInstanceState)
     {
-        super.onPause();
+        // Save the time for this specific alarm
+        savedInstanceState.putInt(ALARM_HOUR, tp.getHour());
+        savedInstanceState.putInt(ALARM_MINUTE, tp.getMinute());
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Retrieve the saved alarm time
+        tp.setHour(savedInstanceState.getInt(ALARM_HOUR));
+        tp.setMinute(savedInstanceState.getInt(ALARM_MINUTE));
     }
 
     @Override

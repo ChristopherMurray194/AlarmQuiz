@@ -30,22 +30,25 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 public final static String EXTRA_MESSAGE = "helloandroid.brighton.uk.ac.alarmquiz.MESSAGE";
+static final int ALARM_TIME_REQUEST = 1;    // The request code to obtain the alarm time
 private static TextClock Digital;
 private static AnalogClock Analog;
 // Create a dynamic array list of
 public ArrayList<String> alarmsArr = new ArrayList<String>();
 // The ListView that lists the alarms
 ListView list;
+private int ClickedAlarmIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Digital = (TextClock)findViewById(R.id.digitalClock);
-        Analog = (AnalogClock)findViewById(R.id.analogClock);
+        Digital = (TextClock) findViewById(R.id.digitalClock);
+        Analog = (AnalogClock) findViewById(R.id.analogClock);
 
         SetupListView();
         OnAlarmClick();
@@ -66,7 +69,6 @@ ListView list;
 
         // Add it to the list of alarms
         AddNewAlarm("14:30");
-        AddNewAlarm("06:05");
     }
 
     /**
@@ -75,12 +77,12 @@ ListView list;
     private void AddAlarmBttnAction()
     {
         FloatingActionButton addAlarmBttn = (FloatingActionButton) findViewById(R.id.addAlarm);
-        addAlarmBttn.setOnClickListener(new View.OnClickListener()
-        {
+        addAlarmBttn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 AddNewAlarm("11:30");
+                // Configure the alarm's settings
+                ConfigureAlarm(view);
             }
         });
     }
@@ -95,15 +97,21 @@ ListView list;
         ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
         // Add to list view
         adapter.add(str);
+        // Save the alarm position of the new alarm, to be used in onActivityResult
+        ClickedAlarmIndex = adapter.getPosition(str);
     }
 
+    /**
+     * When the alarm item in the ListView is clicked
+     */
     private void OnAlarmClick()
     {
-        ListView list = (ListView) findViewById(R.id.alarmList);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
+                // Save the alarm position of the new alarm, to be used in onActivityResult
+                ClickedAlarmIndex = position;
                 ConfigureAlarm(view);
             }
         });
@@ -113,8 +121,28 @@ ListView list;
     public void ConfigureAlarm(View view)
     {
         Intent intent = new Intent(this, ConfigAlarmActivity.class);
+        // Pass the current time of the alarm view to the intent
+        intent.putExtra("CURRENT_TIME", alarmsArr.get(ClickedAlarmIndex));
+        startActivityForResult(intent, ALARM_TIME_REQUEST);
+    }
 
-        startActivity(intent);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Check the request code
+        if(requestCode == ALARM_TIME_REQUEST)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                String timeStr = data.getStringExtra("ALARM_TIME");
+                // Change the string for the alarm to the chosen time
+                alarmsArr.set(ClickedAlarmIndex, timeStr);
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
+                // Update the adapter
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 
     @Override
