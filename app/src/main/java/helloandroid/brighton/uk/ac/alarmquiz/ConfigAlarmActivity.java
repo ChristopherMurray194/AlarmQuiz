@@ -34,45 +34,49 @@ AlarmManager alarmManager;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_config_alarm);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        RegisterAlarmBroadcast();
-
-        // Set OK button functionality
-        Button OKBttn = (Button) findViewById(R.id.confirm_button);
-        OKBttn.setOnClickListener(new View.OnClickListener()
+        if(savedInstanceState != null)
         {
-            @Override
-            public void onClick(View view)
-            {
-                onClickSetAlarm(view);
-            }
-        });
-
-        // Set Cancel button functionality
-        Button CancelBttn = (Button) findViewById(R.id.exit_button);
-        CancelBttn.setOnClickListener(new View.OnClickListener()
+            // Retrieve the saved alarm time
+            tp.setHour(savedInstanceState.getInt(ALARM_HOUR));
+            tp.setMinute(savedInstanceState.getInt(ALARM_MINUTE));
+        }
+        else
         {
-            @Override
-            public void onClick(View v)
-            {
-                Intent intent = new Intent();
-                Bundle extras = getIntent().getExtras();
-                if(extras != null)
-                {
-                    // Pass the AlarmTime string back to the previous activity
-                    intent.putExtra("ALARM_TIME", extras.getString("CURRENT_TIME"));
+            setContentView(R.layout.activity_config_alarm);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+
+            RegisterAlarmBroadcast();
+
+            // Set OK button functionality
+            Button OKBttn = (Button) findViewById(R.id.confirm_button);
+            OKBttn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onClickSetAlarm(view);
                 }
-                setResult(Activity.RESULT_OK, intent);
-                finish(); // Finish activity
-            }
-        });
+            });
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            // Set Cancel button functionality
+            Button CancelBttn = (Button) findViewById(R.id.exit_button);
+            CancelBttn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    Bundle extras = getIntent().getExtras();
+                    if (extras != null) {
+                        // Pass the AlarmTime string back to the previous activity
+                        intent.putExtra("ALARM_TIME", extras.getString("CURRENT_TIME"));
+                    }
+                    setResult(Activity.RESULT_OK, intent);
+                    finish(); // Finish activity
+                }
+            });
 
-        tp = (TimePicker) findViewById(R.id.timePicker); // Get the time picker resource
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            tp = (TimePicker) findViewById(R.id.timePicker); // Get the time picker resource
+        }
     }
 
     /**

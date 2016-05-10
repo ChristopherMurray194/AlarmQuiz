@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +22,9 @@ import android.widget.Button;
 import android.widget.AnalogClock;
 import android.widget.DigitalClock;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 public final static String EXTRA_MESSAGE = "helloandroid.brighton.uk.ac.alarmquiz.MESSAGE";
 static final int ALARM_TIME_REQUEST = 1;    // The request code to obtain the alarm time
+LinearLayout PopupLayout;
 private static TextClock Digital;
 private static AnalogClock Analog;
 // Create a dynamic array list of
@@ -51,7 +55,7 @@ private int ClickedAlarmIndex;
         Analog = (AnalogClock) findViewById(R.id.analogClock);
 
         SetupListView();
-        OnAlarmClick();
+        OnAlarmListItemClick();
 
         AddAlarmBttnAction();
     }
@@ -104,15 +108,32 @@ private int ClickedAlarmIndex;
     /**
      * When the alarm item in the ListView is clicked
      */
-    private void OnAlarmClick()
+    private void OnAlarmListItemClick()
     {
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 // Save the alarm position of the new alarm, to be used in onActivityResult
                 ClickedAlarmIndex = position;
                 ConfigureAlarm(view);
+            }
+        });
+
+        PopupLayout = new LinearLayout(this);
+
+        // When the item is clicked for a long time (hold)
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
+                // Remove the item from the list
+                adapter.remove(adapter.getItem(position));
+                
+                return true;
             }
         });
     }
@@ -123,9 +144,17 @@ private int ClickedAlarmIndex;
         Intent intent = new Intent(this, ConfigAlarmActivity.class);
         // Pass the current time of the alarm view to the intent
         intent.putExtra("CURRENT_TIME", alarmsArr.get(ClickedAlarmIndex));
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivityForResult(intent, ALARM_TIME_REQUEST);
     }
 
+    /**
+     * Overrides the onActivityResult function, called when a result is received from
+     * a created activity.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
