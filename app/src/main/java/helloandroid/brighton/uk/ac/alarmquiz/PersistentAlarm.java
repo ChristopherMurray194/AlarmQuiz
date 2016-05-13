@@ -35,16 +35,18 @@ public class PersistentAlarm extends Service
         // Vibrate for the duration of the ringtone playback
         vibrator.vibrate(player.getDuration());
 
-        Toast.makeText(this, "Alarm Time Reached", Toast.LENGTH_LONG).show();
+        StartDestroyAlarm();
+
         //onDestroy();
         return START_STICKY;
     }
 
-    @Override
-    public void onDestroy()
+    private void StartDestroyAlarm()
     {
-        super.onDestroy();
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent();
+        intent.setClass(this, DestroyAlarm.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
 }

@@ -97,8 +97,8 @@ AlarmManager alarmManager;
 
     private void RegisterAlarmBroadcast()
     {
-        Intent intent = new Intent(this, PersistentAlarm.class);
-        pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+        Intent intent = new Intent(this, DestroyAlarm.class);
+        pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         alarmManager = (AlarmManager)(this.getSystemService(Context.ALARM_SERVICE));
     }
 

@@ -62,4 +62,6 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_config_alarm">Configure Alarm</string>
+    <string name="title_activity_destroy_alarm">DestroyAlarm</string>
+    <string name="square_root_eighty_one">What is the square root of 81?</string>
 </resources>
