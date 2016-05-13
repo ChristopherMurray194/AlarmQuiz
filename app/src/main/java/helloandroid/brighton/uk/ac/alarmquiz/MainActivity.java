@@ -132,7 +132,7 @@ private int ClickedAlarmIndex;
                 ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
                 // Remove the item from the list
                 adapter.remove(adapter.getItem(position));
-                
+
                 return true;
             }
         });
