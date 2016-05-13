@@ -64,4 +64,6 @@
     <string name="title_activity_config_alarm">Configure Alarm</string>
     <string name="title_activity_destroy_alarm">DestroyAlarm</string>
     <string name="square_root_eighty_one">What is the square root of 81?</string>
+    <!-- When the user gives an incorrect answer, display this string -->
+    <string name="wrong_answer">Incorrect answer, try again.</string>
 </resources>

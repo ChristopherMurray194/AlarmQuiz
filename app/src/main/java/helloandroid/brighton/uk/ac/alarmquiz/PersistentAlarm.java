@@ -35,18 +35,8 @@ public class PersistentAlarm extends Service
         // Vibrate for the duration of the ringtone playback
         vibrator.vibrate(player.getDuration());
 
-        StartDestroyAlarm();
 
         //onDestroy();
         return START_STICKY;
     }
-
-    private void StartDestroyAlarm()
-    {
-        Intent intent = new Intent();
-        intent.setClass(this, DestroyAlarm.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
 }

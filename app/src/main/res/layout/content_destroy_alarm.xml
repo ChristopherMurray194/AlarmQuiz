@@ -11,4 +11,23 @@
     tools:showIn="@layout/activity_destroy_alarm"
     tools:context="helloandroid.brighton.uk.ac.alarmquiz.DestroyAlarm">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Question Text"
+        android:id="@+id/question_view"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/answerField"
+        android:inputType="text"
+        android:imeOptions="actionSend"
+        android:layout_below="@+id/question_view"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>
