@@ -4,23 +4,23 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.provider.MediaStore;
 import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DestroyAlarm extends AppCompatActivity {
     MediaPlayer player;
     Vibrator vibrator;
+    QuestionsDB Database;
+    int SelectedQuestionID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,11 @@ public class DestroyAlarm extends AppCompatActivity {
         setContentView(R.layout.activity_destroy_alarm);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Create an instance of the questions database
+        Database = new QuestionsDB(this);
+        Database.getDatabase().clearDatabase();
+        Database.PopulateDB();
 
         // Play the default ringtone
         player = MediaPlayer.create(this, Settings.System.DEFAULT_RINGTONE_URI);
@@ -43,10 +48,27 @@ public class DestroyAlarm extends AppCompatActivity {
         // Get the TextView to display the question
         TextView textView = (TextView) findViewById(R.id.question_view);
         textView.setTextSize(40);
-        textView.setText(R.string.square_root_eighty_one);
 
+        int min = 0;    // Minimum bound of database
+        int max = Database.getDatabase().getAllQuestions().size()-1; // Max bound of database
+        // Generate a random integer within the bounds of the database size
+        SelectedQuestionID = ThreadLocalRandom.current().nextInt(min, max + 1);
+        ArrayList<String> arr = Database.getDatabase().getAllQuestions();
+        // Get the randomly selected question
+        String question = Database.getDatabase().getAllQuestions().get(SelectedQuestionID);
+        // Display the question
+        textView.setText(question);
+
+        // Handle the input from the user (their answer)
+        HandleUserInput();
+    }
+
+    private void HandleUserInput()
+    {
         // Get the EditText view to obtain the user's answer
         final EditText userInput = (EditText) findViewById(R.id.answerField);
+        // Get the answer corresponding to the selected question
+        final String answer = Database.getDatabase().getAllAnswers().get(SelectedQuestionID);
 
         userInput.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
@@ -54,11 +76,12 @@ public class DestroyAlarm extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
                 boolean handled = false;
+                /* When the user presses the send/submit button on the keyboard
+                   submitting their answer... */
                 if(actionId == EditorInfo.IME_ACTION_SEND)
                 {
                     // If the user's input equals the correct answer
-                    if (userInput.getText().toString().equals("nine") ||
-                            userInput.getText().toString().equals(Integer.toString(9)))
+                    if (userInput.getText().toString().equalsIgnoreCase(answer))
                     {
                         // Turn off the alarm
                         EndAlarm();
