@@ -22,7 +22,8 @@ public class QuestionsDB
         QuestionsDBHelper dbHelper = QuestionsDB;
         dbHelper.insertQuestion("What is the square root of 81?", "nine");
         dbHelper.insertQuestion("What is the capital of England", "London");
-        dbHelper.insertQuestion("4 X 4 = ", "sixteen");
+        dbHelper.insertQuestion("What is 4 multiplied by 4?", "sixteen");
+        dbHelper.insertQuestion("Star Wars the _____ Awakens.", "Force");
         dbHelper.close();
     }
 

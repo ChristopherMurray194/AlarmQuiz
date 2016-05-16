@@ -22,7 +22,7 @@ public class QuestionsDBHelper extends SQLiteOpenHelper
 
     public QuestionsDBHelper(Context context)
     {
-        super(context, DATABASE_NAME, null ,1);
+        super(context, DATABASE_NAME, null, 1);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class QuestionsDBHelper extends SQLiteOpenHelper
         ContentValues contentValues = new ContentValues();
         // Add the passed question to the database
         contentValues.put(QUESTION_COLUMN_QUESTION, question);
-        // Add the passed answer to the database
         contentValues.put(QUESTION_COLUMN_ANSWER, answer);
+
         // Add the above content values to the questions database table
         db.insert(QUESTIONS_TABLE_NAME, null, contentValues);
         db.close();
@@ -84,6 +84,7 @@ public class QuestionsDBHelper extends SQLiteOpenHelper
         ContentValues contentValues = new ContentValues();
         contentValues.put(QUESTION_COLUMN_QUESTION, question);
         contentValues.put(QUESTION_COLUMN_ANSWER, answer);
+
         // Update the questions database entry of the given id number, with the given content values
         db.update(QUESTIONS_TABLE_NAME, contentValues, "id = ? ", new String[] {Integer.toString(id)} );
         return true;

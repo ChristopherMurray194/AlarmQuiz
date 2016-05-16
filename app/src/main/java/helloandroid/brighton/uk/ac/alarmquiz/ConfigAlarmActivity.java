@@ -152,6 +152,8 @@ AlarmManager alarmManager;
     protected void onDestroy()
     {
         super.onDestroy();
+        // Delete the alarm associated with this intent
+        UnregisterAlarmBroadcast();
     }
 
 
