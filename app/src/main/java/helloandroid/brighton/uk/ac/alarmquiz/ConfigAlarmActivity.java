@@ -42,8 +42,6 @@ AlarmManager alarmManager;
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
-            RegisterAlarmBroadcast();
-
             // Set OK button functionality
             Button OKBttn = (Button) findViewById(R.id.confirm_button);
             OKBttn.setOnClickListener(new View.OnClickListener() {
@@ -121,8 +119,9 @@ AlarmManager alarmManager;
         calendar.set(Calendar.SECOND, 0);                   // Set the seconds to 0
         long alarmTime = calendar.getTimeInMillis();        // Get the time to set the alarm
         Toast.makeText(this, calendar.getTime().toString(), Toast.LENGTH_LONG).show();
-        // Get the current time and set alarm after 10 seconds from current time
-        // so here we get
+        // Set the alarm pending intent
+        RegisterAlarmBroadcast();
+        // Get the current time and set alarm
        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         Intent intent = new Intent();
         // Pass the AlarmTime string back to the previous activity
