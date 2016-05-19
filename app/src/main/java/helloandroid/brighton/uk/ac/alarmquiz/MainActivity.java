@@ -1,7 +1,11 @@
 package helloandroid.brighton.uk.ac.alarmquiz;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -11,23 +15,25 @@ import android.content.Intent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AnalogClock;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextClock;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 public final static String EXTRA_MESSAGE = "helloandroid.brighton.uk.ac.alarmquiz.MESSAGE";
 static final int ALARM_TIME_REQUEST = 1;    // The request code to obtain the alarm time
-LinearLayout PopupLayout;
 private static TextClock Digital;
 private static AnalogClock Analog;
 // Create a dynamic array list of
-public ArrayList<String> alarmsArr = new ArrayList<String>();
+private ArrayList<String> alarmsArr = new ArrayList<String>();
 // The ListView that lists the alarms
-ListView list;
+private ListView list;
 private int ClickedAlarmIndex;
+private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,8 +44,8 @@ private int ClickedAlarmIndex;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Digital = (TextClock) findViewById(R.id.digitalClock);
-        Analog = (AnalogClock) findViewById(R.id.analogClock);
+        SetupAnalogClock();
+        SetupDigitalClock();
 
         SetupListView();
         OnAlarmListItemClick();
@@ -47,6 +53,33 @@ private int ClickedAlarmIndex;
         AddAlarmBttnAction();
     }
 
+    /**
+     * Setup the AnalogClock with any desired attributes
+     */
+    private void SetupAnalogClock()
+    {
+        Analog = (AnalogClock) findViewById(R.id.analogClock);
+        Analog.setVisibility(View.GONE);    // Hide the Analog clock
+    }
+
+    /**
+     * Setup the Digital/TextClock with any desired attributes
+     */
+    private void SetupDigitalClock()
+    {
+        // Get the text clock colour
+        final int COLOUR = ContextCompat.getColor(this, R.color.DigitalClockColour);
+
+        Digital = (TextClock) findViewById(R.id.digitalClock);
+        Digital.setTextSize(60);        // Set the size of the Text clock text
+        Digital.setTextColor(COLOUR);   // Set the text colour
+        Digital.setBackgroundColor(ContextCompat.getColor(this, R.color.BLACK));
+        Digital.setPadding(200, 50, 200, 50); // L,T,R,B // Center the clock
+    }
+
+    /**
+     * Setup the ListView to display the user's set alarms in a list form
+     */
     private void SetupListView()
     {
         list = (ListView) findViewById(R.id.alarmList);
@@ -57,9 +90,6 @@ private int ClickedAlarmIndex;
                 alarmsArr       // Views to be displayed
         );
         list.setAdapter(adapter);
-
-        // Add it to the list of alarms
-        AddNewAlarm("14:30");
     }
 
     /**
@@ -71,9 +101,22 @@ private int ClickedAlarmIndex;
         addAlarmBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddNewAlarm("11:30");
-                // Configure the alarm's settings
-                ConfigureAlarm(view);
+
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
+                // A constraint that only allows the user to create 20 alarms maximum
+                if (adapter.getCount() < MAX_ALARMS) {
+                    /*
+                    Give some arbitrary time, it will be changed anyway if the user selects a new
+                    time
+                    */
+                    AddNewAlarm("11:30");
+                    // Configure the alarm's settings
+                    ConfigureAlarm(view);
+                } else    // The maximum alarm cap has been reached
+                {
+                    // Display alarm cap reached message to user
+                    Toast.makeText(view.getContext(), "You cannot set more than 20 alarms.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -97,28 +140,48 @@ private int ClickedAlarmIndex;
      */
     private void OnAlarmListItemClick()
     {
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Save the alarm position of the new alarm, to be used in onActivityResult
                 ClickedAlarmIndex = position;
                 ConfigureAlarm(view);
             }
         });
 
-        PopupLayout = new LinearLayout(this);
-
         // When the item is clicked for a long time (hold)
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
-        {
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
-                // Remove the item from the list
-                adapter.remove(adapter.getItem(position));
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                final int ItemPos = position; // Position of the item in the list
+
+                // Build the dialog box
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                dialogBuilder.setMessage("Delete this alarm?"); // Dialog message to be displayed
+
+                // Setup positive button behaviour
+                dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
+                        // Remove the item from the list
+                        adapter.remove(adapter.getItem(ItemPos));
+                    }
+                });
+
+                // Setup negative button behaviour
+                dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cancel the dialog and do not delete the alarm
+                        dialog.cancel();
+                    }
+                });
+
+                // Create the dialog box
+                AlertDialog alert = dialogBuilder.create();
+                // Show the dialog box
+                alert.show();
 
                 return true;
             }
