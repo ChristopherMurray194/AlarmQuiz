@@ -42,16 +42,22 @@ AlarmManager alarmManager;
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
+            // Create the alarm pending intent
+            RegisterAlarmBroadcast();
+
             // Set OK button functionality
             Button OKBttn = (Button) findViewById(R.id.confirm_button);
-            OKBttn.setOnClickListener(new View.OnClickListener() {
+            OKBttn.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View view)
+                {
                     onClickSetAlarm(view);
                 }
             });
 
             final Intent intent = getIntent();
+            // Get the string currently displayed by the item selected in the ListView from the MainActivity
             final String CurrentTime = intent.getExtras().getString(getString(R.string.CURRENT_TIME));
             // Set Cancel button functionality
             Button CancelBttn = (Button) findViewById(R.id.exit_button);
@@ -119,8 +125,6 @@ AlarmManager alarmManager;
         calendar.set(Calendar.SECOND, 0);                   // Set the seconds to 0
         long alarmTime = calendar.getTimeInMillis();        // Get the time to set the alarm
         Toast.makeText(this, calendar.getTime().toString(), Toast.LENGTH_LONG).show();
-        // Set the alarm pending intent
-        RegisterAlarmBroadcast();
         // Get the current time and set alarm
        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         Intent intent = new Intent();

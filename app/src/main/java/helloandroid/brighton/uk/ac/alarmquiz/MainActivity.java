@@ -22,6 +22,8 @@ import android.widget.TextClock;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 public final static String EXTRA_MESSAGE = "helloandroid.brighton.uk.ac.alarmquiz.MESSAGE";
@@ -105,11 +107,15 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
                 ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
                 // A constraint that only allows the user to create 20 alarms maximum
                 if (adapter.getCount() < MAX_ALARMS) {
-                    /*
-                    Give some arbitrary time, it will be changed anyway if the user selects a new
-                    time
-                    */
-                    AddNewAlarm("11:30");
+                    // Get the current time
+                    Date date = new Date(); // Initializes to the current time
+                    Calendar calender = Calendar.getInstance();
+                    calender.setTime(date);
+                    int CurrentHour = calender.get(Calendar.HOUR_OF_DAY);   // Get the current hour
+                    int CurrentMinute = calender.get(Calendar.MINUTE);      // Get the current minute
+
+                    // Set the alarm string to the current time
+                    AddNewAlarm(String.format("%s:%s", CurrentHour, CurrentMinute));
                     // Configure the alarm's settings
                     ConfigureAlarm(view);
                 } else    // The maximum alarm cap has been reached
