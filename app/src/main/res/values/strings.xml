@@ -67,4 +67,8 @@
     <string name="square_root_eighty_one">What is the square root of 81?</string>
     <!-- When the user gives an incorrect answer, display this string -->
     <string name="wrong_answer">Incorrect answer, try again.</string>
+    <!-- Current time displayed by item to be passed to intent -->
+    <string name="CURRENT_TIME">CURRENT_TIME</string>
+    <!-- Time selected by the user to be passed back to the main activity so that it can be displayed by the item -->
+    <string name="ALARM_TIME">ALARM_TIME</string>
 </resources>

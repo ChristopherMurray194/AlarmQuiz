@@ -74,7 +74,7 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
         Digital.setTextSize(60);        // Set the size of the Text clock text
         Digital.setTextColor(COLOUR);   // Set the text colour
         Digital.setBackgroundColor(ContextCompat.getColor(this, R.color.BLACK));
-        Digital.setPadding(200, 50, 200, 50); // L,T,R,B // Center the clock
+        Digital.setPadding(100, 50, 100, 50); // L,T,R,B // Center the clock
     }
 
     /**
@@ -152,7 +152,8 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
         // When the item is clicked for a long time (hold)
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+            {
                 final int ItemPos = position; // Position of the item in the list
 
                 // Build the dialog box
@@ -160,9 +161,11 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
                 dialogBuilder.setMessage("Delete this alarm?"); // Dialog message to be displayed
 
                 // Setup positive button behaviour
-                dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
                         ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
                         // Remove the item from the list
                         adapter.remove(adapter.getItem(ItemPos));
@@ -170,9 +173,11 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
                 });
 
                 // Setup negative button behaviour
-                dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
                         // Cancel the dialog and do not delete the alarm
                         dialog.cancel();
                     }
@@ -188,12 +193,13 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
         });
     }
 
-    /** Called when the user clicks an item in the ListView */
+    /** Called when the user clicks an item in the ListView or fab */
     public void ConfigureAlarm(View view)
     {
         Intent intent = new Intent(this, ConfigAlarmActivity.class);
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
         // Pass the current time of the alarm view to the intent
-        intent.putExtra("CURRENT_TIME", alarmsArr.get(ClickedAlarmIndex));
+        intent.putExtra(getString(R.string.CURRENT_TIME), adapter.getItem(ClickedAlarmIndex).toString());
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivityForResult(intent, ALARM_TIME_REQUEST);
     }
@@ -214,7 +220,7 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
         {
             if(resultCode == RESULT_OK)
             {
-                String timeStr = data.getStringExtra("ALARM_TIME");
+                String timeStr = data.getStringExtra(getString(R.string.ALARM_TIME));
                 // Change the string for the alarm to the chosen time
                 alarmsArr.set(ClickedAlarmIndex, timeStr);
                 ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();

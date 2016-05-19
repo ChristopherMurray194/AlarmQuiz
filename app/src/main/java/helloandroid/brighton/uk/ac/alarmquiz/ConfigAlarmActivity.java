@@ -53,16 +53,19 @@ AlarmManager alarmManager;
                 }
             });
 
+            final Intent intent = getIntent();
+            final String CurrentTime = intent.getExtras().getString(getString(R.string.CURRENT_TIME));
             // Set Cancel button functionality
             Button CancelBttn = (Button) findViewById(R.id.exit_button);
-            CancelBttn.setOnClickListener(new View.OnClickListener() {
+            CancelBttn.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent();
-                    Bundle extras = getIntent().getExtras();
-                    if (extras != null) {
+                public void onClick(View v)
+                {
+                    if (CurrentTime != null)
+                    {
                         // Pass the AlarmTime string back to the previous activity
-                        intent.putExtra("ALARM_TIME", extras.getString("CURRENT_TIME"));
+                        intent.putExtra(getString(R.string.ALARM_TIME), CurrentTime);
                     }
                     setResult(Activity.RESULT_OK, intent);
                     finish(); // Finish activity
@@ -72,6 +75,12 @@ AlarmManager alarmManager;
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             tp = (TimePicker) findViewById(R.id.timePicker); // Get the time picker resource
+            //                           01234
+            // Time string formatted as: HH:MM
+            int HourStr = Integer.valueOf(CurrentTime.substring(0, CurrentTime.indexOf(':')));
+            int MinuteStr = Integer.valueOf(CurrentTime.substring(3));
+            tp.setHour(HourStr);
+            tp.setMinute(MinuteStr);
         }
     }
 
@@ -117,7 +126,7 @@ AlarmManager alarmManager;
        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         Intent intent = new Intent();
         // Pass the AlarmTime string back to the previous activity
-        intent.putExtra("ALARM_TIME", GetAlarmTime());
+        intent.putExtra(getString(R.string.ALARM_TIME), GetAlarmTime());
         setResult(Activity.RESULT_OK, intent);
         // Alarm is set, exit activity
         finish();
