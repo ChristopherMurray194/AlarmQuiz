@@ -120,6 +120,17 @@ AlarmManager alarmManager;
         Date date = new Date(); // Initializes to current time/date
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
+        // If the selected hour is earlier than the current hour OR
+        // If the selected hour is the current hour AND the selected minute is earlier than or equal
+        // to the current minute
+        if( (tp.getHour() < calendar.get(Calendar.HOUR_OF_DAY)) ||
+                ((tp.getHour() == calendar.get(Calendar.HOUR_OF_DAY)) &&
+                        (tp.getMinute() <= calendar.get(Calendar.MINUTE))) )
+        {
+            // Set the alarm for the next day instead of the current day
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
+        }
+
         calendar.set(Calendar.HOUR_OF_DAY, tp.getHour());   // Set the hour to the selected hour
         calendar.set(Calendar.MINUTE, tp.getMinute());      // Set the minute to the selected minute
         calendar.set(Calendar.SECOND, 0);                   // Set the seconds to 0

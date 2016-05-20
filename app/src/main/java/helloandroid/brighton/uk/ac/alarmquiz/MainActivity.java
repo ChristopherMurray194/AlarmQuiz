@@ -111,11 +111,16 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
                     Date date = new Date(); // Initializes to the current time
                     Calendar calender = Calendar.getInstance();
                     calender.setTime(date);
-                    int CurrentHour = calender.get(Calendar.HOUR_OF_DAY);   // Get the current hour
-                    int CurrentMinute = calender.get(Calendar.MINUTE);      // Get the current minute
+                    String CurrentHour = String.valueOf(calender.get(Calendar.HOUR_OF_DAY));   // Get the current hour
+                    String CurrentMinute = String.valueOf(calender.get(Calendar.MINUTE));      // Get the current minute
 
-                    // Set the alarm string to the current time
-                    AddNewAlarm(String.format("%s:%s", CurrentHour, CurrentMinute));
+                    // If hour or minute is less than a single digit, prepend with a 0
+                    if(calender.get(Calendar.HOUR_OF_DAY) < 10){ CurrentHour = "0" + CurrentHour; }
+                    if(calender.get(Calendar.MINUTE) < 10){ CurrentMinute = "0" + CurrentMinute; }
+
+                        // Set the alarm string to the current time
+                        AddNewAlarm(String.format("%s:%s", CurrentHour, CurrentMinute));
+
                     // Configure the alarm's settings
                     ConfigureAlarm(view);
                 } else    // The maximum alarm cap has been reached
