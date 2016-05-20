@@ -72,7 +72,8 @@ AlarmManager alarmManager;
                         intent.putExtra(getString(R.string.ALARM_TIME), CurrentTime);
                     }
                     setResult(Activity.RESULT_OK, intent);
-                    finish(); // Finish activity
+
+                   onBackPressed();
                 }
             });
 
@@ -138,12 +139,13 @@ AlarmManager alarmManager;
         Toast.makeText(this, calendar.getTime().toString(), Toast.LENGTH_LONG).show();
         // Get the current time and set alarm
        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+
         Intent intent = new Intent();
         // Pass the AlarmTime string back to the previous activity
         intent.putExtra(getString(R.string.ALARM_TIME), GetAlarmTime());
         setResult(Activity.RESULT_OK, intent);
-        // Alarm is set, exit activity
-        finish();
+
+        onBackPressed();
     }
 
     private void UnregisterAlarmBroadcast()
@@ -178,6 +180,4 @@ AlarmManager alarmManager;
         // Delete the alarm associated with this intent
         UnregisterAlarmBroadcast();
     }
-
-
 }
