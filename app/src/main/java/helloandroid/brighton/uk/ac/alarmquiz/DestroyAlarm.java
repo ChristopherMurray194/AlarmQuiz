@@ -53,7 +53,6 @@ public class DestroyAlarm extends AppCompatActivity {
         int max = Database.getDatabase().getAllQuestions().size()-1; // Max bound of database
         // Generate a random integer within the bounds of the database size
         SelectedQuestionID = ThreadLocalRandom.current().nextInt(min, max + 1);
-        ArrayList<String> arr = Database.getDatabase().getAllQuestions();
         // Get the randomly selected question
         String question = Database.getDatabase().getAllQuestions().get(SelectedQuestionID);
         // Display the question

@@ -21,13 +21,15 @@ TimePicker tp;
 // The hour and minute key constants used for saving the time picker's hour and time
 static final String ALARM_HOUR = "Hour";
 static final String ALARM_MINUTE = "Minute";
+private static int INTENT_ID = 0;
 // Used to register alarm manager
 public PendingIntent pendingIntent;
 // Used to store running alarm manager
 AlarmManager alarmManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         if(savedInstanceState != null)
@@ -41,6 +43,9 @@ AlarmManager alarmManager;
             setContentView(R.layout.activity_config_alarm);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
+
+            // Unique intent ID
+            ++INTENT_ID;
 
             // Create the alarm pending intent
             RegisterAlarmBroadcast();
@@ -73,7 +78,7 @@ AlarmManager alarmManager;
                     }
                     setResult(Activity.RESULT_OK, intent);
 
-                   onBackPressed();
+                    onBackPressed();
                 }
             });
 
@@ -108,7 +113,7 @@ AlarmManager alarmManager;
     private void RegisterAlarmBroadcast()
     {
         Intent intent = new Intent(this, DestroyAlarm.class);
-        pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        pendingIntent = PendingIntent.getActivity(this, INTENT_ID, intent, 0);
         alarmManager = (AlarmManager)(this.getSystemService(Context.ALARM_SERVICE));
     }
 
@@ -143,14 +148,10 @@ AlarmManager alarmManager;
         Intent intent = new Intent();
         // Pass the AlarmTime string back to the previous activity
         intent.putExtra(getString(R.string.ALARM_TIME), GetAlarmTime());
+        intent.putExtra(getString(R.string.PendingID), INTENT_ID);
         setResult(Activity.RESULT_OK, intent);
 
         onBackPressed();
-    }
-
-    private void UnregisterAlarmBroadcast()
-    {
-        alarmManager.cancel(pendingIntent);
     }
 
     @Override
@@ -161,23 +162,5 @@ AlarmManager alarmManager;
         savedInstanceState.putInt(ALARM_MINUTE, tp.getMinute());
 
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState)
-    {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        // Retrieve the saved alarm time
-        tp.setHour(savedInstanceState.getInt(ALARM_HOUR));
-        tp.setMinute(savedInstanceState.getInt(ALARM_MINUTE));
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        // Delete the alarm associated with this intent
-        UnregisterAlarmBroadcast();
     }
 }

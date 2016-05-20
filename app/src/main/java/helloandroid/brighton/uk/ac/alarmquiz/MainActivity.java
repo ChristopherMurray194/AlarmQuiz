@@ -1,6 +1,9 @@
 package helloandroid.brighton.uk.ac.alarmquiz;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -28,6 +31,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 public final static String EXTRA_MESSAGE = "helloandroid.brighton.uk.ac.alarmquiz.MESSAGE";
 static final int ALARM_TIME_REQUEST = 1;    // The request code to obtain the alarm time
+static final int PENDING_ID_REQUEST = 2;    // The request code to obtain the pending intent id
 private static TextClock Digital;
 private static AnalogClock Analog;
 // Create a dynamic array list of
@@ -36,6 +40,7 @@ private ArrayList<String> alarmsArr = new ArrayList<String>();
 private ListView list;
 private int ClickedAlarmIndex;
 private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
+private int pendingId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -118,8 +123,8 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
                     if(calender.get(Calendar.HOUR_OF_DAY) < 10){ CurrentHour = "0" + CurrentHour; }
                     if(calender.get(Calendar.MINUTE) < 10){ CurrentMinute = "0" + CurrentMinute; }
 
-                        // Set the alarm string to the current time
-                        AddNewAlarm(String.format("%s:%s", CurrentHour, CurrentMinute));
+                    // Set the alarm string to the current time
+                    AddNewAlarm(String.format("%s:%s", CurrentHour, CurrentMinute));
 
                     // Configure the alarm's settings
                     ConfigureAlarm(view);
@@ -177,6 +182,13 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
+                        // Cancel the alarm
+                        Intent intent = new Intent(MainActivity.this, ConfigAlarmActivity.class);
+                        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, pendingId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        pendingIntent.cancel();
+                        alarmManager.cancel(pendingIntent);
+
                         ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
                         // Remove the item from the list
                         adapter.remove(adapter.getItem(ItemPos));
@@ -227,17 +239,19 @@ private final int MAX_ALARMS = 20; // Maximum number of alarms the user can set
     {
         super.onActivityResult(requestCode, resultCode, data);
         // Check the request code
-        if(requestCode == ALARM_TIME_REQUEST)
+        if( (requestCode == ALARM_TIME_REQUEST) && (resultCode == RESULT_OK) )
         {
-            if(resultCode == RESULT_OK)
-            {
-                String timeStr = data.getStringExtra(getString(R.string.ALARM_TIME));
-                // Change the string for the alarm to the chosen time
-                alarmsArr.set(ClickedAlarmIndex, timeStr);
-                ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
-                // Update the adapter
-                adapter.notifyDataSetChanged();
-            }
+            String timeStr = data.getStringExtra(getString(R.string.ALARM_TIME));
+            // Change the string for the alarm to the chosen time
+            alarmsArr.set(ClickedAlarmIndex, timeStr);
+            ArrayAdapter<String> adapter = (ArrayAdapter<String>) list.getAdapter();
+            // Update the adapter
+            adapter.notifyDataSetChanged();
+        }
+
+        if( (requestCode == PENDING_ID_REQUEST) && (resultCode == RESULT_OK) )
+        {
+            pendingId = data.getExtras().getInt(getString(R.string.PendingID));
         }
     }
 

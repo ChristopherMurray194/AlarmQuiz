@@ -71,4 +71,5 @@
     <string name="CURRENT_TIME">CURRENT_TIME</string>
     <!-- Time selected by the user to be passed back to the main activity so that it can be displayed by the item -->
     <string name="ALARM_TIME">ALARM_TIME</string>
+    <string name="PendingID">PENDING_ID</string>
 </resources>
